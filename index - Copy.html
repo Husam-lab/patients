@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج طلب فحوصات</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="./Mon.png">
+
+  <style>
+    body {
+      direction: rtl;
+      margin: 0;
+      background: #121212;
+      color: #f9f9f9;
+      font-family: Tahoma, Arial;
+      font-size: 14px;
+    }
+    .app {
+      max-width: 1100px;
+      margin: 20px auto;
+      background: #1e1e1e;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.7);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 18px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .form-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .form-row label {
+      min-width: 90px;
+      color: #ddd;
+      font-weight: bold;
+    }
+    input, select {
+      padding: 8px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #222;
+      color: #fff;
+    }
+    input:focus, select:focus {
+      border-color: #4dabf7;
+      outline: none;
+    }
+    .radios {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .boxes {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .box {
+      min-height: 140px;
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    .box h3 {
+      color: #000;
+      text-align: center;
+      margin: 0;
+      font-size: 14px;
+      font-weight: bold;
+      border-bottom: 1px solid #000;
+      padding-bottom: 4px;
+    }
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+      justify-content: center;
+    }
+    .pill {
+      background: #333;
+      padding: 4px 6px;
+      border-radius: 12px;
+      font-size: 12px;
+      color: #eee;
+      display: flex;
+      align-items: center;
+    }
+    .pill button {
+      border: 0;
+      background: none;
+      color: #ff3333;
+      margin-right: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    /* ألوان الصناديق */
+    .box[data-key="SERUM"] { background: #fff9c4; }
+    .box[data-key="EDTA"] { background: #e1bee7; }
+    .box[data-key="CUP"] { background: #e0e0e0; }
+    .box[data-key="SENDOUT"] { background: #c8e6c9; }
+    .box[data-key="SODIUM_CITRATE"] { background: #bbdefb; }
+    .box[data-key="GENERAL"] { background: #f5f5f5; }
+    #GENERAL_INPUT {
+      margin-top: 6px;
+      width: 95%;
+      height: 90px;
+      padding: 6px;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      background: #fafafa;
+      color: #000;
+      text-align: center;
+    }
+    .sidebar input {
+      padding: 8px;
+      width: 100%;
+      border-radius: 8px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #333;
+    }
+    .tests {
+      max-height: 500px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+    .test-item {
+      background: #222;
+      padding: 8px;
+      margin: 6px 0;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .test-item:hover {
+      background: #333;
+    }
+    .total {
+      text-align: center;
+      font-weight: bold;
+      margin: 12px 0;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn {
+      padding: 10px 160px;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+    }
+    .btn.print {
+      background: #4caf50;
+    }
+    .btn.print:hover {
+      background: #43a047;
+    }
+    .btn.clear {
+      background: #e53935;
+    }
+    .btn.clear:hover {
+      background: #c62828;
+    }
+    /* الطباعة */
+    @page {
+      size: 3.8cm 2.5cm;
+      margin: 0;
+    }
+    @media print {
+      body > *:not(#print-area) {
+        display: none !important;
+      }
+      #print-area {
+        display: block !important;
+      }
+      .label {
+        page-break-after: always;
+        font-size: 9px !important;
+        font-weight: 1000 !important;
+        color: #000 !important;
+      }
+    }
+    #print-area {
+      display: none;
+    }
+    .label {
+      width: 3.8cm;
+      height: 2.5cm;
+      box-sizing: border-box;
+      padding: 1mm;
+      font-size: 14px;
+      text-align: center;
+      overflow: hidden;
+    }
+    .underline {
+      border-bottom: 1px solid #000;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <div>
+    <h1>نموذج طلب فحوصات</h1>
+    <div class="form-row">
+      <label>أسم المريض:</label>
+      <input id="patientName" type="text" placeholder="أكتب الاسم" />
+    </div>
+
+    <div class="form-row">
+      <label>العمر:</label>
+      <input id="ageValue" type="number" min="0" placeholder="أكتب العمر" style="width:80px" />
+      <select id="ageUnit">
+        <option value="y">سنة</option>
+        <option value="m">شهر</option>
+        <option value="d">يوم</option>
+      </select>
+      <div class="radios">
+        <label><input type="radio" name="gender" value="M" checked /> ذكر</label>
+        <label><input type="radio" name="gender" value="F" /> أنثى</label>
+      </div>
+    </div>
+
+    <div class="boxes">
+      <div class="box" data-key="SERUM"><h3>SERUM</h3><div class="pills" id="SERUM"></div></div>
+      <div class="box" data-key="EDTA"><h3>EDTA</h3><div class="pills" id="EDTA"></div></div>
+      <div class="box" data-key="SODIUM_CITRATE"><h3>Sodium Citrate</h3><div class="pills" id="SODIUM_CITRATE"></div></div>
+      <div class="box" data-key="SENDOUT"><h3>Send out</h3><div class="pills" id="SENDOUT"></div></div>
+      <div class="box" data-key="CUP"><h3>Cup</h3><div class="pills" id="CUP"></div></div>
+      <div class="box" data-key="GENERAL">
+        <h3>Other</h3>
+        <div class="pills" id="GENERAL"></div>
+        <input id="GENERAL_INPUT" type="text" placeholder="اكتب فحوصات أخرى" />
+      </div>
+    </div>
+
+    <div class="total">المجموع: <span id="totalPrice">0</span> دينار عراقي</div>
+    <div class="actions">
+      <button class="btn print" id="printBtn">طــبــاعـــة 🖨️</button>
+      <button class="btn clear" id="clearBtn">مــســح 🗑️ </button>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <input id="searchInput" type="text" placeholder="بحث باسم الفحص" />
+    <div class="tests" id="testsList"></div>
+  </aside>
+</div>
+
+<div id="print-area"></div>
+
+<script>
+  const TESTS = {
+  'CBC': { sample: 'EDTA', price: 10000 },
+  'Hb': { sample: 'EDTA', price: 3000 },
+  'ABO': { sample: 'EDTA', price: 3000 },
+  'ESR': { sample: 'EDTA', price: 3000 },
+  'Bleeding Time': { sample: 'Capillary', price: 2500 },
+  'Clotting Time': { sample: 'Capillary', price: 2500 },
+  'Blood Film': { sample: 'EDTA', price: 20000 },
+  'Dir. Coombs': { sample: 'EDTA', price: 15000 },
+  'HbA1C': { sample: 'EDTA', price: 10000 },
+  'Reticulocyte Count': { sample: 'EDTA', price: 10000 },
+
+'PT': { sample: 'SODIUM_CITRATE', price: 10000},
+'PTT': { sample: 'SODIUM_CITRATE',price: 8000},
+'DDIMER': {sample: 'SODIUM_CITRATE',price: 15000},
+
+  'FBS': { sample: 'SERUM', price: 2000 },
+  'RBS': { sample: 'SERUM', price: 2000 },
+  'HIV Ab': { sample: 'SERUM', price: 3000 },
+  'PT in serum': { sample: 'SERUM', price: 3000 },
+  'Urea': { sample: 'SERUM', price: 3000 },
+  'Creat': { sample: 'SERUM', price: 3000 },
+  'Uric': { sample: 'SERUM', price: 3000 },
+  'WAT': { sample: 'SERUM', price: 3000 },
+  '2ME Typhi': { sample: 'SERUM', price: 3000 },
+  'BAT': { sample: 'SERUM', price: 3000 },
+  'Ca Total': { sample: 'SERUM', price: 3000 },
+  'Vitamin D3': { sample: 'SERUM', price: 15000 },
+  'Ferritin': { sample: 'SERUM', price: 15000 },
+  'HBsAg': { sample: 'SERUM', price: 3000 },
+  'CRP': { sample: 'SERUM', price: 3000 },
+  'RF': { sample: 'SERUM', price: 3000 },
+  'PPBS': { sample: 'SERUM', price: 2000 },
+  'HCV Ab': { sample: 'SERUM', price: 3000 },
+  'H pylori Ab (Serum)': { sample: 'SERUM', price: 5000 },
+  'HDL': { sample: 'SERUM', price: 1000 },
+  'T. Protein': { sample: 'SERUM', price: 5000 },
+  'Lipid Profile': { sample: 'SERUM', price: 7000 },
+  'Cholesterol': { sample: 'SERUM', price: 3000 },
+  'Triglyceride': { sample: 'SERUM', price: 3000 },
+  'ASOT': { sample: 'SERUM', price: 3000 },
+  'Electrolyte': { sample: 'SERUM', price: 15000 },
+  'B-HCG': { sample: 'SERUM', price: 15000 },
+  'ALP': { sample: 'SERUM', price: 5000 },
+  's.Albumin': { sample: 'SERUM', price: 5000 },
+  'GPT (ALT)': { sample: 'SERUM', price: 5000 },
+  'GOT (AST)': { sample: 'SERUM', price: 5000 },
+  'GGT': { sample: 'SERUM', price: 15000 },
+  'Ind. Coombs': { sample: 'SERUM', price: 15000 },
+  'TSB Total': { sample: 'SERUM', price: 3000 },
+  'Bil. Direct': { sample: 'SERUM', price: 3000 },
+  'Bil. Indirect': { sample: 'SERUM', price: 0 },
+  'Toxo IgM': { sample: 'SERUM', price: 10000 },
+  'Rubella IgM': { sample: 'SERUM', price: 10000 },
+  'CMV IgM': { sample: 'SERUM', price: 10000 },
+  'Herpes IgM I': { sample: 'SERUM', price: 10000 },
+  'Herpes IgM II': { sample: 'SERUM', price: 10000 },
+  'TORCH': { sample: 'SERUM', price: 35000 },
+  'Troponin (I)': { sample: 'SERUM', price: 15000 },
+  'VDRL': { sample: 'SERUM', price: 5000 },
+  'Phosphorous': { sample: 'SERUM', price: 10000 },
+  'Viral Screen': { sample: 'SERUM', price: 10000 },
+  'HOMA IR': { sample: 'SERUM', price: 15000 },
+  'Insulin (Fasting)': { sample: 'SERUM', price: 15000 },
+  'T3': { sample: 'SERUM', price: 10000 },
+  'T4': { sample: 'SERUM', price: 10000 },
+  'Free T3': { sample: 'SERUM', price: 10000 },
+  'Free T4': { sample: 'SERUM', price: 10000 },
+  'TSH': { sample: 'SERUM', price: 10000 },
+  'Thyroid Funcion': { sample: 'SERUM', price: 25000 },
+  'LH': { sample: 'SERUM', price: 10000 },
+  'FSH': { sample: 'SERUM', price: 10000 },
+  'Prolactin': { sample: 'SERUM', price: 10000 },
+  'Testo. Total': { sample: 'SERUM', price: 10000 },
+  'AMH': { sample: 'SERUM', price: 30000 },
+  'GH (Basal)': { sample: 'SERUM', price: 15000 },
+  'GTT': { sample: 'SERUM', price: 10000 },
+
+  'GUE': { sample: 'CUP', price: 3000 },
+  'GSE': { sample: 'CUP', price: 5000 },
+  'Semen Analysis': { sample: 'CUP', price: 5000 },
+  'Urine Culture': { sample: 'CUP', price: 15000 },
+  'Protein in urine': { sample: 'CUP', price: 1000 },
+  'Stool Culture': { sample: 'CUP', price: 15000 },
+  'Semen Culture': { sample: 'CUP', price: 15000 },
+  'H.pylori Ag (stool)': { sample: 'CUP', price: 7000 },
+  'FOB': { sample: 'CUP', price: 10000 },
+  'Pregnancy in urine': { sample: 'CUP', price: 3000 },
+
+'LDH': { sample: 'SENDOUT', price: 15000 },
+'CPK (Total)': { sample: 'SENDOUT', price: 15000 },
+'ACTH (morning)': { sample: 'SENDOUT', price: 20000 },
+'Cortisol (morning)': { sample: 'SENDOUT', price: 15000 },
+'Cortisol (Evening)': { sample: 'SENDOUT', price: 15000 },
+'17 OH Progesterone': { sample: 'SENDOUT', price: 20000 },
+'CEA': { sample: 'SENDOUT', price: 18000 },
+'PSA (Total)': { sample: 'SENDOUT', price: 18000 },
+'PSA (Free)': { sample: 'SENDOUT', price: 20000 },
+'CA 15.3': { sample: 'SENDOUT', price: 20000 },
+'CA 19.9': { sample: 'SENDOUT', price: 20000 },
+'CA 125': { sample: 'SENDOUT', price: 20000 },
+'Total IgE': { sample: 'SENDOUT', price: 20000 },
+'ANA': { sample: 'SENDOUT', price: 22000 },
+'ds-DNA': { sample: 'SENDOUT', price: 22000 },
+'Anti SSA (Ro)': { sample: 'SENDOUT', price: 35000 },
+'Anti SSB (La)': { sample: 'SENDOUT', price: 35000 },
+'GH (After clonidin)': { sample: 'SENDOUT', price: 15000 },
+'ATTG IgA': { sample: 'SENDOUT', price: 18000 },
+'Anti TPO': { sample: 'SENDOUT', price: 20000 },
+'Fecal Calprotectectin': { sample: 'SENDOUT', price: 20000 },
+'Stone Analysis': { sample: 'SENDOUT', price: 20000 },
+'Anti Cardiolipin IgM': { sample: 'SENDOUT', price: 15000 },
+'Anti Phospholipid IgM': { sample: 'SENDOUT', price: 15000 },
+'Anti-CCP': { sample: 'SENDOUT', price: 22000 },
+'C-Peptide (Fasting)': { sample: 'SENDOUT', price: 15000 },
+'Parathormone (PTH)': { sample: 'SENDOUT', price: 18000 },
+'Progesterone': { sample: 'SENDOUT', price: 15000 },
+'Testo. Free': { sample: 'SENDOUT', price: 20000 },
+'E2': { sample: 'SENDOUT', price: 15000 },
+'DHEA': { sample: 'SENDOUT', price: 20000 },
+'Vitamin B12': { sample: 'SENDOUT', price: 15000 },
+'Folate': { sample: 'SENDOUT', price: 20000 },
+'Zinc': { sample: 'SENDOUT', price: 10000 },
+'S. Iron': { sample: 'SENDOUT', price: 15000 },
+'TIBC': { sample: 'SENDOUT', price: 18000 },
+'Amylase': { sample: 'SENDOUT', price: 15000 },
+'Lipase': { sample: 'SENDOUT', price: 15000 },
+};
+  // تخزين الفحوصات المحددة لكل عينة
+  const selected = { SERUM: [], EDTA: [], SODIUM_CITRATE: [], SENDOUT: [], CUP: [], GENERAL: [] };
+
+  // عرض قائمة الفحوصات مع البحث
+  function renderTests(filter = '') {
+    const list = document.getElementById('testsList');
+    list.innerHTML = '';
+    Object.keys(TESTS).forEach(t => {
+      if (filter && !t.toLowerCase().includes(filter.toLowerCase())) return;
+      const div = document.createElement('div');
+      div.className = 'test-item';
+      div.textContent = t;
+      div.onclick = () => {
+        addTest(t);
+        document.getElementById('searchInput').value = '';
+        renderTests();
+      };
+      list.appendChild(div);
+    });
+  }
+
+  // إضافة فحص إلى القائمة المختارة إذا لم يكن موجوداً
+  function addTest(name) {
+    const s = TESTS[name].sample;
+    if (!selected[s].includes(name)) {
+      selected[s].push(name);
+      refreshBox(s);
+      updateTotal();
+    }
+  }
+
+  // تحديث عرض الفحوصات داخل كل صندوق (box)
+  function refreshBox(key) {
+    const box = document.getElementById(key);
+    box.innerHTML = '';
+    selected[key].forEach(name => {
+      const pill = document.createElement('span');
+      pill.className = 'pill';
+      pill.innerHTML = `${name} <button>✕</button>`;
+      pill.querySelector('button').onclick = () => {
+        selected[key] = selected[key].filter(x => x !== name);
+        refreshBox(key);
+        updateTotal();
+      };
+      box.appendChild(pill);
+    });
+  }
+
+  // تحديث المجموع الكلي للأسعار
+  function updateTotal() {
+  let total = 0;
+  Object.keys(selected).forEach(k => {
+    selected[k].forEach(n => {
+      if (TESTS[n]) total += TESTS[n].price;
+    });
+  });
+  document.getElementById('totalPrice').textContent = total.toLocaleString('ar-IQ');
+}
+
+
+  // تنفيذ البحث عند الكتابة
+  document.getElementById('searchInput').oninput = e => renderTests(e.target.value);
+
+  // بدء تحميل قائمة الفحوصات
+  renderTests();
+
+  // زر مسح كل البيانات
+  document.getElementById('clearBtn').onclick = () => {
+    document.getElementById('patientName').value = '';
+    document.getElementById('ageValue').value = '';
+    document.querySelector('input[name=gender][value=M]').checked = true;
+    Object.keys(selected).forEach(k => { selected[k] = []; refreshBox(k); });
+    document.getElementById("GENERAL_INPUT").value = '';
+    updateTotal();
+  };
+
+  // زر الطباعة مع التعديل المطلوب (نسختان لخانة CUP)
+  document.getElementById('printBtn').onclick = () => {
+    const name = document.getElementById('patientName').value || '---';
+    const age = document.getElementById('ageValue').value || '0';
+    const unit = document.getElementById('ageUnit').value || 'y';
+    const gender = document.querySelector('input[name=gender]:checked').value;
+    const printArea = document.getElementById('print-area');
+    printArea.innerHTML = '';
+
+    Object.keys(selected).forEach(key => {
+      // نسخ الفحوصات المختارة من كل عينة
+      let tests = selected[key].slice();
+
+      // إضافة الفحوصات اليدوية (GENERAL)
+      if (key === "GENERAL") {
+        const extra = document.getElementById("GENERAL_INPUT").value.trim();
+        if (extra) tests.push(extra);
+      }
+
+      if (tests.length === 0) return; // لا تطبع إذا لا توجد فحوصات
+
+      // تحديد عدد النسخ: 2 لـ CUP، 1 للباقي
+      const copies = (key === 'CUP') ? 2 : 1;
+
+      for (let i = 0; i < copies; i++) {
+        const label = document.createElement('div');
+        label.className = 'label';
+
+        const line1 = document.createElement('div');
+        line1.style.fontWeight = '900';
+        line1.textContent = name;
+        label.appendChild(line1);
+
+        const line2 = document.createElement('div');
+        line2.textContent = `${gender}-${age}${unit} [${key}]`;
+        label.appendChild(line2);
+
+        const underline = document.createElement('div');
+        underline.className = 'underline';
+        label.appendChild(underline);
+
+        const line3 = document.createElement('div');
+        line3.textContent = tests.join(', ');
+        label.appendChild(line3);
+
+        printArea.appendChild(label);
+      }
+    });
+
+    if (printArea.children.length === 0) {
+      alert('لا توجد بيانات للطباعة');
+      return;
+    }
+
+    window.print();
+  };
+</script>
+
+</body>
+</html>
